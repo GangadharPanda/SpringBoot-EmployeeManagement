@@ -90,7 +90,7 @@ public class EmployeeController {
 			throw new IllegalArgumentException("Invalid Id. Cannot delete non-existing employee.");
 		}
 		employeeService.deleteEmployee(empId);
-		ApiResponseDTO apiResponseDTO = new ApiResponseDTO("Deleted successfully", employeeOptional.get(), null);
+		ApiResponseDTO apiResponseDTO = new ApiResponseDTO("Deleted successfully", null, null);
 		return new ResponseEntity<ApiResponseDTO>(apiResponseDTO, HttpStatus.OK);
 	}
 

@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.example.employee_management.dtos.ApiResponseDTO;
 
 @RestControllerAdvice
-public class GlobalExceptionhandler {
+public class GlobalExceptionHandler {
 
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<ApiResponseDTO> handleIllegalArgExceptions(IllegalArgumentException ex) {
-		ApiResponseDTO response = new ApiResponseDTO("Invalid input ", null, ex.getMessage());
+		ApiResponseDTO response = new ApiResponseDTO("Invalid input ", null, ex.toString());
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
