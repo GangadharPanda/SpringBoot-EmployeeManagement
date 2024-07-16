@@ -1,11 +1,9 @@
 package com.example.employee_management.services;
 
-import com.example.employee_management.entities.Employee;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import com.example.employee_management.entities.Employee;
 
 @Service
 public interface ISearchService {
