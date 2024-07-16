@@ -63,8 +63,8 @@ flowchart TD
     requestToLogin["`Please Login`"]
     markdown --> enterUsername
     enterUsername --> CheckUser
-    CheckUser --> insertUser
-    CheckUser --> requestToLogin
+    CheckUser --> |NO|insertUser
+    CheckUser --> |YES|requestToLogin
     insertUser --> verifyEmail
     verifyEmail --> onceVerified
 
