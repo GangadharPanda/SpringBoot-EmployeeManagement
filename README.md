@@ -1,10 +1,60 @@
 This project uses Spring Hibernate , authentication , pagination and all other advanced features.
 
-Our application should be state less , means any new request should be self sufficient 
+***
+**User authentication**
+
+Our application should be stateless , means any new request should be self sufficient and can go to any of the servers.
+
+
+#####User registration
+
+registration(email/mobileNumber, password)
+
+Steps :
+
+ 1. User is created with the given email/mobile number and password
+ 2. User will get a link to verify himself(Just to ensure that we don't login using someone else's email/mobile number).
+ 3. Once verification completes, user can login into the platform.
+ 
+ What do in server side while creating a new user 
+ 
+ ```
+ | user_id | password                         |            | is_verified  |  -- created,.... 
+| --------|:---------------------------------:| --------   | -----------: |
+| 1       | AT5YlsuA2g8cKlg4VSWrtuILSD5r2vG2  |  x@abc.com |       0      |
+| 2       | qEmz4Ltwmse43VPWm84yshUWZATyz28a  | nx@abc.com |       0      |
+| 3       | qEmz4Ltwmse43VPWm84yshUWZATyz28a  | px@bub.com |       1      |
+ 
+ ```
+ 
+    1. We create a new entry into users table 
+    2. Keep the is_verified column = 0
+    3. When user verifies himself , we update is_verified = 1;
+    4. Once verified , user can login into the platform
+    
+#####How User passwords are handled?
+
+#####Possible solutions : 
+
+**Encode the password** - When you encode the password , for example 
+A is converted to 9X4DE
+B is converted to XPUi7
+ .. 
+ 
+So when a user gives a password, we encode it and save to the db.
+
+Suppose someone's password is xyz@is32  and it's encoded to XFSEDE^&67HfGGs.
+
+While login with the same email password, we again encode the incoming password and compare it with the password saved in the db. if it's matches , we are all set .
 
 
 
-**Client**
+**This sounds secure , isn't it ?**
+
+
+ 
+
+#####User Login 
 
 Login(email, password)
 
