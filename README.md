@@ -51,7 +51,24 @@ While login with the same email password, we again encode the incoming password 
 
 **This sounds secure , isn't it ?**
 
+```mermaid
 
+flowchart TD
+    markdown["`New User`"]
+    enterUsername["`Enter username and password`"]
+    CheckUser{"`Check if any user with same username exist?`"}
+    insertUser["`Insert a new user with email and password(ENCODED) into the User_DB, keeping the is_verified = 0`"]
+    verifyEmail["`Send an email to user to verify himself`"]
+    onceVerified["`Update is_verified = 1`"]
+    requestToLogin["`Please Login`"]
+    markdown --> enterUsername
+    enterUsername --> CheckUser
+    CheckUser --> insertUser
+    CheckUser --> requestToLogin
+    insertUser --> verifyEmail
+    verifyEmail --> onceVerified
+
+```
  
 
 #####User Login 
