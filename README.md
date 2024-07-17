@@ -69,7 +69,7 @@ flowchart TD
 
 **Problem with this approach**
 
-Usually most of the users will use top 10 frequently used password 
+Most frequently used password 
 eg :
   
   “123456”,
