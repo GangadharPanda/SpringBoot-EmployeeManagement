@@ -94,7 +94,7 @@ This creates another issue ...How will we verify an user while login ?
 
 There comes another famous algorithm to handle this as well BCrypt
 
-** How does BCrypt works ?[Link text] (https://bcrypt-generator.com/) **
+**How does BCrypt works ?[Link text] (https://bcrypt-generator.com/) **
 
 It gives different value for same input :
 eg : xyz@1234 -- Will have different hashed value every time I generate a BCrypt password for this password.
