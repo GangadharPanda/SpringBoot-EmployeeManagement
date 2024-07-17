@@ -122,10 +122,10 @@ login(String email, String password){
 
 ```
 1. Add Maven dependency 
-2. Encode the Password on Registration 
-3. Encode the Password on Authentication
+2. Encode the Password on sign up 
+3. Match the Password on login
 
-**Add Maven Dependency**
+**1. Add Maven Dependency**
 
 ```
 <dependency>
@@ -134,8 +134,134 @@ login(String email, String password){
 </dependency>
 
 ```
+Once we add these dependencies, we start getting on login page on hitting ** http://localhost:8080.**
+
+We don't want to use this default Spring Security Configuration so we will need to override this default 
+behaviour. ** How to do that ?**
+
+Create a configs folders and a class SpringSecurityConfig.java 
+
+Add class level annotation of @Configuration
+ 
+**@Configuration is a powerful annotation that plays a central role in defining and managing beans in Spring Boot applications **
+
+Here's a breakdown of what @Configuration does:
+
+**Indicates Bean Definitions**:  A class annotated with @Configuration tells Spring Boot that this class contains one or more methods that define beans. These methods are typically annotated with @Bean.
+
+**Spring IoC Container Integration**: The @Configuration annotation essentially instructs the Spring IoC container to process the class during application startup. This processing involves creating bean instances and managing their lifecycles.
+
+**Convention Over Configuration**: Spring Boot follows the convention over configuration principle. This means that with @Configuration, you can define beans in a concise and declarative way, reducing the need for extensive XML configuration files.
 
 
+**What are we gonna do in this file to override the default behaviour of Spring Security?**
+
+Define a bean for SecurityFilterChain
+
+```
+   @Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception                   
+	{
+		httpSecurity.cors().disable();
+		httpSecurity.csrf().disable();
+		httpSecurity.authorizeHttpRequests(authorise -> authorise.anyRequest().permitAll());
+		return httpSecurity.build();
+	}
+
+
+```
+---
+**2. Encode the Password on signUp** 
+
+ @Autowire BCryptPasswordEncoder in BCryptAuthServiceImpl.java file
+ 
+```java 
+
+   @Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+```
+
+Modify signUp method to have password encoded before saving to DB
+
+```java
+   @Override
+	public User signUp(String userName, String password) {
+		Optional<User> savedUser = authServiceWithoutTokenRepository.findByEmail(userName);
+		if (savedUser.isPresent()) {
+			return savedUser.get();
+		}
+		return authServiceWithoutTokenRepository
+				.save(new User(null, userName, bCryptPasswordEncoder.encode(password), (byte)    0));
+	}
+```
+
+**Looks Good ? should signUp work now ?**
+
+```
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field bCryptPasswordEncoder in com.example.em.services.BCryptAuthServiceImpl required a bean of type 
+'org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+	- @org.springframework.beans.factory.annotation.Qualifier("BCryptAuthServiceImpl")
+
+
+Action:
+
+
+```
+**Consider defining a bean** of type 'org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder'
+in your configuration.
+
+**Why do we need to define a bean for BCryptPasswordEncoder in configuration file even after defining it in the pom.xml file?**
+
+Adding the dependency provides the class definition.
+
+Creating a @Bean method tells Spring Boot to create and manage an instance of that class as a bean.
+
+Now it works finally 
+
+BCryptAuthServiceImpl.java
+
+```
+
+   @Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+	@Override
+	public User signUp(String userName, String password) {
+		Optional<User> savedUser = authServiceWithoutTokenRepository.findByEmail(userName);
+		if (savedUser.isPresent()) {
+			return savedUser.get();
+		}
+		return authServiceWithoutTokenRepository
+				.save(new User(null, userName, bCryptPasswordEncoder.encode(password), (byte)  0));
+	}
+	
+```
+---
+**3. Match the Password on login**
+
+```
+  @Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+	@Override
+	public Optional<User> login(String userName, String password) {
+		Optional<User> savedUser = authServiceWithoutTokenRepository.findByEmail(userName);
+		if (savedUser.isPresent() && bCryptPasswordEncoder.matches(password, savedUser.get().getPassword())) {
+			return savedUser;
+		}
+		throw new RuntimeException("Incorrect Credentials");
+	}
+```
 
 
 
