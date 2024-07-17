@@ -45,11 +45,7 @@ So when a user gives a password, we encode it and save to the db.
 
 Suppose someone's password is xyz@is32  and it's encoded to XFSEDE^&67HfGGs.
 
-While login with the same email password, we again encode the incoming password and compare it with the password saved in the db. if it's matches , we are all set .
-
-
-
-**This sounds secure , isn't it ?**
+While login with the same email password, we again **encode the incoming password and compare it with the password saved in the db**. if it's matches , we are all set .
 
 ```mermaid
 
@@ -69,7 +65,74 @@ flowchart TD
     verifyEmail --> onceVerified
 
 ```
- 
+**This sounds secure , isn't it ?**
+
+####Problem with this approach
+
+Usually most of the users will use top 10 frequently used password 
+eg :
+  
+  “123456”,
+ “123456789”,
+ “qwerty”,
+ “password”,
+ and “111111”
+
+
+Suppose somehow the database is leaked, 
+
+The hacker will try login to the portal with these common passwords and see what is the respective encoded value.
+
+Once she has these encoded value , it can login with all the users who are using these common password 
+
+Select * from  User_DB where password In ENCODED VALUE(most commonly used passwords)
+
+so all those user are hacked. 
+
+Solution : We need an encoding system which gives **different value for same input**. 
+This creates another issue ...How will we verify an user while login ?
+
+There comes another famous algorithm to handle this as well BCrypt
+
+How does BCrypt works ?[Link text] (https://bcrypt-generator.com/)
+
+It gives different value for same input :
+eg : xyz@1234 -- Will have different hashed value every time I generate a BCrypt password for this password.
+
+While login we will pass the same password xyz@1234, 
+
+also as we know we can not decrypt a hashed value back to the original password , how it will validate ? or match it from the stored password?
+
+BCrypt provides a method called **matches** which verifies if the stored password can be generated using the original password..then user can login otherwise login fails.
+
+
+
+```java 
+
+signUp(String email, String password){
+ String hashedPassword = BCryptasswordEncoder.encode(password);
+ saveToDB(email, hashedPassword);
+}
+
+login(String email, String password){
+Employee emp = employeeService.findEmployeeByEmail(email);
+if(emp == null) return null; 
+if(BCryptPaswordEncoder.matches(emp.hashedPassword, password)) return emp;
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #####User Login 
 
