@@ -249,52 +249,26 @@ BCryptAuthServiceImpl.java
 ```
 
 ---
+**Understanding Token-Based Authentication**
 
+An authentication token (auth token) is a computer-generated code that verifies a user’s identity. Auth tokens are used to access websites, applications, services, and application programming interfaces (APIs). They allow users to access these resources without having to re-enter their login credentials each time they visit.
 
-
-
-
-
-
-
-
-
-
-
+Auth tokens are encrypted and machine-generated. They can be expired or revoked, which provides better protection against attack scenarios like brute-force attacks or stolen passwords.
 
 #####User Login 
+Login seems fine but what about other resources? Should we have any authentication as resource level as well.
 
-Login(email, password)
+If yes , how we are going to implement this?
 
-Server Side
+Any upcoming requests eg: **getEmployeeSalary(empId)** 
 
-AuthController.java
-
-```java
-@PostMapping("/login")
-login(@RequestBody LoginInfo requestBody){
-   String email = requestBody.getEmail();
-   String password = requestBody.getPassword();
-   
-   1.Check if any user with same email id exists in the db
-   Employee loggedInEmployee = authService.login(email, password);
-   if(loggedInEmployee == null){
-     throw new RuntimeException("Incorrect Credentials");
-   }  
-   return loggedInEmployee;
-}           
-```
-Any upcoming requests , **say getEmployeeSalary(empId)** -- will need to verified if user is loggedIn into the platform , before fetching the Salary details.
-
-One way to fix this is to pass the email and password to all the APIs.so the actual call to
-getEmployeeSalary(email, password) -- will be 
+One way to fix this is to pass the **email and password** to all the APIs.So the actual call to
+getEmployeeSalary(email, password)
 
 ```java 
 @GetMapping("/salary")
 public Salary getEmployeeSalary(String email, String password){
-
 	Employee loggedInEmployee = authService.login(email, password);
-
 	if(loggedInEmployee!= null)
 	  // All the logic to get the salary of the given employee
 	  Salary salary = employeService.getSalary(loggedInEmployee.getId());
@@ -308,7 +282,7 @@ So we will need to call the Login(email, password) before getting the Salary for
 
 **Problem with this approach** 
 
-This will add additional overhead of loggin in the users , which is not ideal in cases where we have huge customer base and will eventually become a bottleneck when we try to scale the product.
+This will add additional overhead of login in the users , which is not ideal in cases where we have huge customer base and will eventually become a bottleneck when we try to scale the product.
 
 ** What should we do ? **
 
@@ -318,11 +292,11 @@ We will need additional table to keep a track of Tokens assigned to a user
 
 
 ```md
-| user_id | token                             | created_at  |
-| --------|:---------------------------------:| -----------:|
-| 1       | AT5YlsuA2g8cKlg4VSWrtuILSD5r2vG2  |             |
-| 2       | qEmz4Ltwmse43VPWm84yshUWZATyz28a  |             |
-| 2       | qEmz4Ltwmse43VPWm84yshUWZATyz28a  |             |
+| user_id | token                             | created_at       |
+| --------|:---------------------------------:| ----------------:|
+| 1       | AT5YlsuA2g8cKlg4VSWrtuILSD5r2vG2  | currentTimestamp |
+| 2       | qEmz4Ltwmse43VPWm84yshUWZATyz28a  | currentTimestamp |
+| 2       | qEmz4Ltwmse43VPWm84yshUWZATyz28a  | currentTimestamp |
 ```
 
 
@@ -341,7 +315,7 @@ public String login(@RequestBody LoginInfo requestBody){
    String email = requestBody.getEmail();
    String password = requestBody.getPassword();
    
-   1.Check if any user with same email id exists in the db
+   // 1.Check if any user with same email id exists in the db
    String authToken = authService.login(email, password);
    if(authToken == null){
      throw new RuntimeException("Incorrect Credentials");
