@@ -13,7 +13,7 @@ registration(email, password)
 Steps :
 
  1. User is created with the given email and password
- 2. User will get a link to verify himself(Just to ensure that we don't signup using someone else's email).
+ 2. User will get a link to verify himself(Just to ensure that we don't signUp using someone else's email).
  3. Once verification completes, user can login into the platform.
  
  What do we do in server side while creating a new user 
@@ -48,7 +48,6 @@ Suppose someone's password is xyz@is32  and it's encoded to XFSEDE^&67HfGGs.
 While login with the same email password, we again **encode the incoming password and compare it with the password saved in the db**. if it's matches , we are all set .
 
 ```mermaid
-
 flowchart TD
     markdown["`New User`"]
     enterUsername["`Enter username and password`"]
@@ -63,7 +62,6 @@ flowchart TD
     CheckUser --> |YES|requestToLogin
     insertUser --> verifyEmail
     verifyEmail --> onceVerified
-
 ```
 **This sounds secure , isn't it ?**
 
@@ -108,7 +106,6 @@ BCrypt provides a method called **matches** which verifies if the stored passwor
 
 
 ```java 
-
 signUp(String email, String password){
  String hashedPassword = BCryptasswordEncoder.encode(password);
  saveToDB(email, hashedPassword);
@@ -119,7 +116,6 @@ login(String email, String originalPassword){
 	if(employee == null) return null; 
 	if(BCryptPaswordEncoder.matches(originalPassword, emp.getPassword()) return employee;
 }
-
 ```
 1. Add Maven dependency 
 2. Encode the Password on sign up 
@@ -132,7 +128,6 @@ login(String email, String originalPassword){
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-starter-security</artifactId>
 </dependency>
-
 ```
 Once we add these dependencies, we start getting on login page on hitting ** http://localhost:8080.**
 
@@ -167,8 +162,6 @@ Define a bean for SecurityFilterChain
 		httpSecurity.authorizeHttpRequests(authorise -> authorise.anyRequest().permitAll());
 		return httpSecurity.build();
 	}
-
-
 ```
 ---
 **2. Encode the Password on signUp** 
@@ -179,7 +172,6 @@ Define a bean for SecurityFilterChain
 
    @Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
-
 ```
 
 Modify signUp method to have password encoded before saving to DB
@@ -211,11 +203,6 @@ Field bCryptPasswordEncoder in com.example.em.services.BCryptAuthServiceImpl req
 The injection point has the following annotations:
 	- @org.springframework.beans.factory.annotation.Autowired(required=true)
 	- @org.springframework.beans.factory.annotation.Qualifier("BCryptAuthServiceImpl")
-
-
-Action:
-
-
 ```
 **Consider defining a bean** of type 'org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder'
 in your configuration.
@@ -231,7 +218,6 @@ Now it works finally
 BCryptAuthServiceImpl.java
 
 ```
-
    @Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -244,13 +230,12 @@ BCryptAuthServiceImpl.java
 		return authServiceWithoutTokenRepository
 				.save(new User(null, userName, bCryptPasswordEncoder.encode(password), (byte)  0));
 	}
-	
 ```
 ---
 **3. Match the Password on login**
 
 ```
-  @Autowired
+   @Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	@Override
@@ -263,7 +248,7 @@ BCryptAuthServiceImpl.java
 	}
 ```
 
-
+---
 
 
 
@@ -283,8 +268,9 @@ Login(email, password)
 
 Server Side
 
-```java
 AuthController.java
+
+```java
 @PostMapping("/login")
 login(@RequestBody LoginInfo requestBody){
    String email = requestBody.getEmail();
@@ -296,13 +282,7 @@ login(@RequestBody LoginInfo requestBody){
      throw new RuntimeException("Incorrect Credentials");
    }  
    return loggedInEmployee;
-}
-
-               2. If not found throw error "Incorrect Credentials"
-               3. If user found 
-                  a. Check the password 
-                  b. if password does not match , throw error "Incorrect Credentials"
-                  c. if password matches , return user details , let the user Login
+}           
 ```
 Any upcoming requests , **say getEmployeeSalary(empId)** -- will need to verified if user is loggedIn into the platform , before fetching the Salary details.
 
@@ -310,7 +290,6 @@ One way to fix this is to pass the email and password to all the APIs.so the act
 getEmployeeSalary(email, password) -- will be 
 
 ```java 
-
 @GetMapping("/salary")
 public Salary getEmployeeSalary(String email, String password){
 
@@ -322,9 +301,7 @@ public Salary getEmployeeSalary(String email, String password){
 	  return salary;
 	}
 	return null;
-	
-
-
+}
 ```
 
 So we will need to call the Login(email, password) before getting the Salary for the employee.
@@ -341,15 +318,11 @@ We will need additional table to keep a track of Tokens assigned to a user
 
 
 ```md
-
-
 | user_id | token                             | created_at  |
 | --------|:---------------------------------:| -----------:|
 | 1       | AT5YlsuA2g8cKlg4VSWrtuILSD5r2vG2  |             |
 | 2       | qEmz4Ltwmse43VPWm84yshUWZATyz28a  |             |
 | 2       | qEmz4Ltwmse43VPWm84yshUWZATyz28a  |             |
-
-
 ```
 
 
@@ -364,7 +337,6 @@ Steps -
 
 
 ```java
-
 public String login(@RequestBody LoginInfo requestBody){
    String email = requestBody.getEmail();
    String password = requestBody.getPassword();
@@ -376,7 +348,6 @@ public String login(@RequestBody LoginInfo requestBody){
    }  
    return authToken;
 }
-
 ```
 
 Same 
