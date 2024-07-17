@@ -3,20 +3,20 @@ This project uses Spring Hibernate , authentication , pagination and all other a
 ***
 **User authentication**
 
-Our application should be stateless , means any new request should be self sufficient and can go to any of the servers.
+Any authentication request should be stateless , means any new request should be self sufficient and can go to any of the available servers.
 
 
 #####User registration
 
-registration(email/mobileNumber, password)
+registration(email, password)
 
 Steps :
 
- 1. User is created with the given email/mobile number and password
- 2. User will get a link to verify himself(Just to ensure that we don't login using someone else's email/mobile number).
+ 1. User is created with the given email and password
+ 2. User will get a link to verify himself(Just to ensure that we don't signup using someone else's email).
  3. Once verification completes, user can login into the platform.
  
- What do in server side while creating a new user 
+ What do we do in server side while creating a new user 
  
  ```
  | user_id | password                         |            | is_verified  |  -- created,.... 
@@ -69,17 +69,17 @@ flowchart TD
 
 **Problem with this approach**
 
-Most frequently used password 
+Below are few most frequently used password 
 eg :
   
-  “123456”,
- “123456789”,
- “qwerty”,
- “password”,
- and “111111”
+ 1. “123456”,
+ 2. “123456789”,
+ 3. “qwerty”,
+ 4. “password”,
+ 5. and “111111”
 
 
-Suppose somehow the database is leaked, 
+Suppose some how the database is leaked, 
 
 The hacker will try login to the portal with these common passwords and see what is the respective encoded value.
 
@@ -114,10 +114,10 @@ signUp(String email, String password){
  saveToDB(email, hashedPassword);
 }
 
-login(String email, String password){
+login(String email, String originalPassword){
 	Employee employee = employeeService.findEmployeeByEmail(email);
 	if(employee == null) return null; 
-	if(BCryptPaswordEncoder.matches(emp.hashedPassword, password)) return employee;
+	if(BCryptPaswordEncoder.matches(originalPassword, emp.getPassword()) return employee;
 }
 
 ```
