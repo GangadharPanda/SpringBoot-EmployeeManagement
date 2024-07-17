@@ -1,4 +1,4 @@
-package com.example.employee_management.dtos;
+package com.example.em.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

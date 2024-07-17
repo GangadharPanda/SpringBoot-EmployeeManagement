@@ -1,4 +1,4 @@
-package com.example.employee_management.dtos;
+package com.example.em.dtos;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

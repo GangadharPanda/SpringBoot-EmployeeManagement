@@ -1,11 +1,11 @@
-package com.example.employee_management.services;
+package com.example.em.services;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.example.employee_management.entities.Employee;
+import com.example.em.entities.Employee;
 
 @Service
 public interface IEmployeeService {

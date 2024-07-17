@@ -1,12 +1,12 @@
-package com.example.employee_management.services;
+package com.example.em.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import com.example.employee_management.entities.Employee;
-import com.example.employee_management.repositories.EmployeeRepository;
+import com.example.em.entities.Employee;
+import com.example.em.repositories.EmployeeRepository;
 
 import jakarta.transaction.Transactional;
 

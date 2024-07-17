@@ -1,4 +1,4 @@
-package com.example.employee_management.exceptionHandlers;
+package com.example.em.exceptionHandlers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.example.employee_management.dtos.ApiResponseDTO;
+import com.example.em.dtos.ApiResponseDTO;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

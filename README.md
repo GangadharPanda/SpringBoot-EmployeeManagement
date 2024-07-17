@@ -83,14 +83,14 @@ Suppose somehow the database is leaked,
 
 The hacker will try login to the portal with these common passwords and see what is the respective encoded value.
 
-Once she has these encoded value , it can login with all the users who are using these common password 
+Once she has these encoded value , she can login with all the users who are using these common password 
 
 **Select * from  User_DB where password In ENCODED VALUE(most commonly used passwords)**
 
-so all those user are hacked. 
+So all those user are hacked. 
 
-Solution : We need an encoding system which gives **different value for same input**. 
-This creates another issue ...How will we verify an user while login ?
+Solution : We need an encoding system which gives **different value for same input. 
+This creates another issue ...How will we verify an user while login ?**
 
 There comes another famous algorithm to handle this as well BCrypt
 
@@ -101,7 +101,7 @@ eg : xyz@1234 -- Will have different hashed value every time I generate a BCrypt
 
 While login we will pass the same password xyz@1234, 
 
-also as we know **we can not decrypt a hashed value back to the original password , how it will validate ? or match it from the stored password?**
+Also as we know **we can not decrypt a hashed value back to the original password , how it will validate ? or match it from the stored password?**
 
 BCrypt provides a method called **matches** which verifies if the stored password can be generated using the original password..then user can login otherwise login fails.
 
@@ -115,11 +115,28 @@ signUp(String email, String password){
 }
 
 login(String email, String password){
-Employee emp = employeeService.findEmployeeByEmail(email);
-if(emp == null) return null; 
-if(BCryptPaswordEncoder.matches(emp.hashedPassword, password)) return emp;
+	Employee employee = employeeService.findEmployeeByEmail(email);
+	if(employee == null) return null; 
+	if(BCryptPaswordEncoder.matches(emp.hashedPassword, password)) return employee;
+}
 
 ```
+1. Add Maven dependency 
+2. Encode the Password on Registration 
+3. Encode the Password on Authentication
+
+**Add Maven Dependency**
+
+```
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+
+```
+
+
+
 
 
 

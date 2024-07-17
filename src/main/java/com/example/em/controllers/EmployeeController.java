@@ -1,4 +1,4 @@
-package com.example.employee_management.controllers;
+package com.example.em.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.employee_management.dtos.ApiResponseDTO;
-import com.example.employee_management.dtos.EmployeeDTO;
-import com.example.employee_management.entities.Employee;
-import com.example.employee_management.services.IEmployeeService;
+import com.example.em.dtos.ApiResponseDTO;
+import com.example.em.dtos.EmployeeDTO;
+import com.example.em.entities.Employee;
+import com.example.em.services.IEmployeeService;
 
 import jakarta.validation.Valid;
 

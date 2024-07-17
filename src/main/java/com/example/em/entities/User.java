@@ -1,7 +1,4 @@
-package com.example.employee_management.entities;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
+package com.example.em.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,28 +19,19 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "employees")
+@Table(name = "users")
 @ToString
-public class Employee {
+public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "first_name")
-    private String firstName;
-
-	@Column(name = "last_name")
-    private String lastName;
-
 	@Column(name = "email")
     private String email;
 
-	@Column(name = "phone_number")
-    private String phoneNumber;
+	@Column(name = "password")
+    private String password;
 
-	@Column(name = "hire_date")
-    private LocalDate hireDate;
-
-	@Column(name = "salary")
-    private BigDecimal salary;
+	@Column(name = "is_verified")
+    private byte isVerified;
 }
