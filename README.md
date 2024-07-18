@@ -356,7 +356,7 @@ Steps -
 
 We just validate the request header before deleting the employee. Below is the flow chart.
 
-```md 
+```mermaid 
 flowchart TD
     markdown["`Delete User Request`"]
     CheckUser{"`Does the request have 'Authorization' header ?`"}
