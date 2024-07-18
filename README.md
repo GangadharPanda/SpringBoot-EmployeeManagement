@@ -263,7 +263,7 @@ If yes , how we are going to implement this?
 Any upcoming requests eg: **deleteEmployee(empId)** 
 
 One way to fix this is to pass the **email and password** to all the APIs.So the actual call to
-getEmployeeSalary(email, password)
+deleteEmployee(email, password)
 
 ```java 
 @GetMapping("/delete/{id}")
@@ -277,7 +277,7 @@ public void deleteEmployee(String email, String password){
 }
 ```
 
-So we will need to call the Login(email, password) before getting the Salary for the employee.
+So we will need to call the Login(email, password) before deleting the employee.
 
 **Problem with this approach** 
 
@@ -308,9 +308,12 @@ Steps -
  5. Otherwise we will notify the client to login.
   
 
-
 ```java
-   @Override
+
+	 AuthServiceWithTokenImpl.java
+
+
+    @Override
 	public Optional<User> login(String userName, String password) {
 		Optional<User> savedUser = userRepository.findByEmail(userName);
 		if (savedUser.isPresent() && bCryptPasswordEncoder.matches(password, savedUser.get().getPassword())) {
@@ -323,8 +326,17 @@ Steps -
 		}
 		throw new RuntimeException("Incorrect Credentials");
 	}
+	
+	
+	@Override
+	public boolean isValidToken(String token, String email) {
+		Optional<UserTokens> userToken = userTokensRepository.findByTokenAndEmail(token, email);
+		return userToken.isPresent() && userToken.get().getExpiredBy().isAfter(LocalDate.now());
+	}
 
-   @DeleteMapping("/delete/{id}")
+    EmployeeController.java
+
+    @DeleteMapping("/delete/{id}")
 	public ResponseEntity<ApiResponseDTO> deleteEmployee(@PathVariable("id") Long empId,
 			@RequestHeader("Authorization") String token) {
 
@@ -342,5 +354,24 @@ Steps -
 	}
 ```
 
-We just validate the request header before deleting the employee. 
+We just validate the request header before deleting the employee. Below is the flow chart.
+
+```md 
+flowchart TD
+    markdown["`Delete User Request`"]
+    CheckUser{"`Does the request have 'Authorization' header ?`"}
+    letHimLogin{"`Do we have any un-expired token 
+    in DB associated with this userName?`"}
+    requestToLogin["`Throw error: , 'Please re-login and attempt'`"]
+    letHimDeleteUser["`Let him delete user`"]
+    markdown --> CheckUser
+    CheckUser --> |YES|letHimLogin
+    CheckUser --> |NO|requestToLogin
+    letHimLogin --> |YES|letHimDeleteUser
+    letHimLogin --> |NO|requestToLogin
+```
+
+But, this approach also requires to check it in user_token table so no optimization in terms of numbers of request . We can have cache and all but we don't want to make one db call(fetch tokens from user_token table).
+
+We are looking for a token , after looking at it the server will come to know if it's valid or not. i.e : SELF VALIDATING Token.
 

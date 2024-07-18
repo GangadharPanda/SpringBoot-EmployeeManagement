@@ -55,7 +55,7 @@ public class AuthServiceWithTokenImpl implements IAuthServiceWithToken {
 	@Override
 	public boolean isValidToken(String token, String email) {
 		Optional<UserTokens> userToken = userTokensRepository.findByTokenAndEmail(token, email);
-		return userToken.isPresent();
+		return userToken.isPresent() && userToken.get().getExpiredBy().isAfter(LocalDate.now());
 	}
 
 }
