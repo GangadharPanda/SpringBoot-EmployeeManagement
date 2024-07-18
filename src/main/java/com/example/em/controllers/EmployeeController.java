@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.em.dtos.ApiResponseDTO;
 import com.example.em.dtos.EmployeeDTO;
 import com.example.em.entities.Employee;
+import com.example.em.services.IAuthServiceWithToken;
 import com.example.em.services.IEmployeeService;
 
 import jakarta.validation.Valid;
@@ -28,6 +30,9 @@ public class EmployeeController {
 
 	@Autowired
 	private IEmployeeService employeeService;
+
+	@Autowired
+	private IAuthServiceWithToken authService;
 
 	/**
 	 * 
@@ -84,10 +89,16 @@ public class EmployeeController {
 	}
 
 	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<ApiResponseDTO> deleteEmployee(@PathVariable("id") Long empId) {
+	public ResponseEntity<ApiResponseDTO> deleteEmployee(@PathVariable("id") Long empId,
+			@RequestHeader("Authorization") String token) {
+
 		Optional<Employee> employeeOptional = employeeService.getEmployee(empId);
 		if (empId == null || !employeeOptional.isPresent()) {
 			throw new IllegalArgumentException("Invalid Id. Cannot delete non-existing employee.");
+		}
+		boolean isValidToken = authService.isValidToken(token, employeeOptional.get().getEmail());
+		if (!isValidToken) {
+			throw new IllegalArgumentException("Invalid session. Please re login.");
 		}
 		employeeService.deleteEmployee(empId);
 		ApiResponseDTO apiResponseDTO = new ApiResponseDTO("Deleted successfully", null, null);

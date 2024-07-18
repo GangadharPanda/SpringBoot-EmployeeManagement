@@ -6,17 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.em.entities.User;
-import com.example.em.repositories.AuthServiceWithoutTokenRepository;
+import com.example.em.repositories.UserRepository;
 
 @Service
 public class AuthServiceImpl implements IAuthServiceWithoutToken {
 
 	@Autowired
-	private AuthServiceWithoutTokenRepository authServiceWithoutTokenRepository;
+	private UserRepository userRepository;
 
 	@Override
 	public Optional<User> login(String userName, String password) {
-		Optional<User> savedUser = authServiceWithoutTokenRepository.findByEmail(userName);
+		Optional<User> savedUser = userRepository.findByEmail(userName);
 		if(savedUser.isPresent() && savedUser.get().getPassword().equals(password)) {
 			return savedUser;
 		}
@@ -25,11 +25,11 @@ public class AuthServiceImpl implements IAuthServiceWithoutToken {
 
 	@Override
 	public User signUp(String userName, String password) {
-		Optional<User> savedUser = authServiceWithoutTokenRepository.findByEmail(userName);
+		Optional<User> savedUser = userRepository.findByEmail(userName);
 		if(savedUser.isPresent()) {
 			return savedUser.get();
 		}
-		return authServiceWithoutTokenRepository.save(new User(null, userName, password, (byte) 0));
+		return userRepository.save(new User(null, userName, password, (byte) 0));
 	}
 
 	@Override

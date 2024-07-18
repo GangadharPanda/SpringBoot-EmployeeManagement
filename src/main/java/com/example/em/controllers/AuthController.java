@@ -19,7 +19,8 @@ public class AuthController {
 	
 	@Autowired
 	
-	@Qualifier("BCryptAuthServiceImpl")
+	//@Qualifier("BCryptAuthServiceImpl")
+	@Qualifier("authServiceWithTokenImpl")
 	private IAuthServiceWithoutToken authServiceWithoutToken;
 	
 	@PostMapping("/login")

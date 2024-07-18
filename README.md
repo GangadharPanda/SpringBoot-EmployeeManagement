@@ -260,19 +260,18 @@ Login seems fine but what about other resources? Should we have any authenticati
 
 If yes , how we are going to implement this?
 
-Any upcoming requests eg: **getEmployeeSalary(empId)** 
+Any upcoming requests eg: **deleteEmployee(empId)** 
 
 One way to fix this is to pass the **email and password** to all the APIs.So the actual call to
 getEmployeeSalary(email, password)
 
 ```java 
-@GetMapping("/salary")
-public Salary getEmployeeSalary(String email, String password){
+@GetMapping("/delete/{id}")
+public void deleteEmployee(String email, String password){
 	Employee loggedInEmployee = authService.login(email, password);
 	if(loggedInEmployee!= null)
 	  // All the logic to get the salary of the given employee
-	  Salary salary = employeService.getSalary(loggedInEmployee.getId());
-	  return salary;
+	  employeService.delete(loggedInEmployee.getId());
 	}
 	return null;
 }
@@ -311,18 +310,37 @@ Steps -
 
 
 ```java
-public String login(@RequestBody LoginInfo requestBody){
-   String email = requestBody.getEmail();
-   String password = requestBody.getPassword();
-   
-   // 1.Check if any user with same email id exists in the db
-   String authToken = authService.login(email, password);
-   if(authToken == null){
-     throw new RuntimeException("Incorrect Credentials");
-   }  
-   return authToken;
-}
+   @Override
+	public Optional<User> login(String userName, String password) {
+		Optional<User> savedUser = userRepository.findByEmail(userName);
+		if (savedUser.isPresent() && bCryptPasswordEncoder.matches(password, savedUser.get().getPassword())) {
+			// The actual token can be different , right now I am using the encoded password
+			// itself
+			UserTokens tokens = new UserTokens(null, savedUser.get().getId(), savedUser.get().getPassword(),  userName,
+					LocalDate.now(), LocalDate.now().plus(1, ChronoUnit.DAYS));
+			userTokensRepository.save(tokens);
+			return savedUser;
+		}
+		throw new RuntimeException("Incorrect Credentials");
+	}
+
+   @DeleteMapping("/delete/{id}")
+	public ResponseEntity<ApiResponseDTO> deleteEmployee(@PathVariable("id") Long empId,
+			@RequestHeader("Authorization") String token) {
+
+		Optional<Employee> employeeOptional = employeeService.getEmployee(empId);
+		if (empId == null || !employeeOptional.isPresent()) {
+			throw new IllegalArgumentException("Invalid Id. Cannot delete non-existing employee.");
+		}
+		boolean isValidToken = authService.isValidToken(token, employeeOptional.get().getEmail());
+		if (!isValidToken) {
+			throw new IllegalArgumentException("Invalid session. Please re login.");
+		}
+		employeeService.deleteEmployee(empId);
+		ApiResponseDTO apiResponseDTO = new ApiResponseDTO("Deleted successfully", null, null);
+		return new ResponseEntity<ApiResponseDTO>(apiResponseDTO, HttpStatus.OK);
+	}
 ```
 
-Same 
+We just validate the request header before deleting the employee. 
 
