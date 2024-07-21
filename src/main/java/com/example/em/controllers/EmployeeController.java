@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,7 +44,7 @@ public class EmployeeController {
 	 *         ResponseEntity<EmployeeDTO> (employeeDTO, Status Code)
 	 */
 
-	@PostMapping("/create")
+	@PostMapping("/employees")
 	public ResponseEntity<ApiResponseDTO> createEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
 		employeeDTO.setId(null);
 		Employee employee = convertToEmployee(employeeDTO);
@@ -52,7 +53,7 @@ public class EmployeeController {
 		return new ResponseEntity<ApiResponseDTO>(apiResponseDTO, HttpStatus.CREATED);
 	}
 
-	@PostMapping("/update")
+	@PutMapping("/employees")
 	public ResponseEntity<ApiResponseDTO> updateEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
 		if (employeeDTO.getId() == null || !employeeService.getEmployee(employeeDTO.getId()).isPresent()) {
 			throw new IllegalArgumentException("Invalid or missing Id. Cannot update non-existing employee.");
@@ -64,7 +65,7 @@ public class EmployeeController {
 		return new ResponseEntity<ApiResponseDTO>(apiResponseDTO, HttpStatus.OK);
 	}
 
-	@GetMapping("/get/{id}")
+	@GetMapping("/employees/{id}")
 	public ResponseEntity<ApiResponseDTO> getEmployee(@PathVariable("id") Long empId) {
 		Optional<Employee> employeeOptional = employeeService.getEmployee(empId);
 		ApiResponseDTO apiResponseDTO = null;
@@ -76,7 +77,7 @@ public class EmployeeController {
 		return new ResponseEntity<ApiResponseDTO>(apiResponseDTO, HttpStatus.OK);
 	}
 
-	@GetMapping("/all")
+	@GetMapping("/employees")
 	public ResponseEntity<ApiResponseDTO> getAllEmployee() {
 		List<EmployeeDTO> employeeDTOs = new ArrayList<>();
 		List<Employee> employees = employeeService.getAllEmployee();
@@ -88,7 +89,7 @@ public class EmployeeController {
 		return new ResponseEntity<ApiResponseDTO>(apiResponseDTO, HttpStatus.OK);
 	}
 
-	@DeleteMapping("/delete/{id}")
+	@DeleteMapping("/employees/{id}")
 	public ResponseEntity<ApiResponseDTO> deleteEmployee(@PathVariable("id") Long empId,
 			@RequestHeader("Authorization") String token) {
 
